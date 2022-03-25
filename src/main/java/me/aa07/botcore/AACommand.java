@@ -1,4 +1,4 @@
-package me.aa07.discordbot.core;
+package me.aa07.botcore;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommand;

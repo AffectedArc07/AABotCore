@@ -1,4 +1,4 @@
-package me.aa07.discordbot.core;
+package me.aa07.botcore;
 
 import java.awt.Color;
 import java.util.ArrayList;
