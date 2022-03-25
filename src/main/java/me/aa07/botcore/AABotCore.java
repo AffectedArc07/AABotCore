@@ -23,6 +23,8 @@ public abstract class AABotCore {
     private String embedFooter;
     private String embedColour;
 
+    private String token;
+
     // Reference to the discord API object
     private DiscordApi api;
 
@@ -35,12 +37,16 @@ public abstract class AABotCore {
 
         logger = Logger.getLogger("AABotCore");
         logger.setLevel(Level.ALL);
-        logger.info("Starting up");
+        logger.info("Initialised");
         instance = this;
-        embedFooter = embedfooter;
-        embedColour = embedcolour;
+        this.token = token;
+        this.embedFooter = embedfooter;
+        this.embedColour = embedcolour;
 
         registeredCommands = new HashMap<String, AACommand>();
+    }
+
+    public void launch() {
         api = new DiscordApiBuilder().setToken(token).login().join();
         logger.info(String.format("Logged in as %s / %s", api.getYourself().getName(), api.getYourself().getId()));
 

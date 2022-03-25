@@ -23,7 +23,7 @@ Step 2, add the following to your dependencies
         <dependency>
             <groupId>me.aa07</groupId>
             <artifactId>botcore</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
             <type>pom</type>
         </dependency>
 ```
