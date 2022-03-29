@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -35,8 +35,7 @@ public abstract class AABotCore {
         // Setup our logging format
         System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
 
-        logger = Logger.getLogger("AABotCore");
-        logger.setLevel(Level.ALL);
+        logger = LogManager.getLogger(AABotCore.class);
         logger.info("Initialised");
         instance = this;
         this.token = token;
