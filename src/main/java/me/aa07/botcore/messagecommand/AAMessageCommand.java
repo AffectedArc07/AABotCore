@@ -1,40 +1,35 @@
-package me.aa07.botcore;
+package me.aa07.botcore.messagecommand;
 
+import me.aa07.botcore.AABotCore;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.MessageContextMenuBuilder;
+import org.javacord.api.interaction.MessageContextMenuInteraction;
 
-public abstract class AACommand {
+public abstract class AAMessageCommand {
     private String commandId;
-    private String description;
     private AABotCore bot;
 
-    public AACommand(String commandId, String description, AABotCore bot) {
+    public AAMessageCommand(String commandId, AABotCore bot) {
         this.commandId = commandId;
-        this.description = description;
         this.bot = bot;
     }
 
     // Override with your command "work" function. Use canExecute() for permission checking
-    public abstract void execute(SlashCommandInteraction event);
+    public abstract void execute(MessageContextMenuInteraction event);
 
     // Override where required for if your command requires args
     public void setup(DiscordApi api) {
-        SlashCommand.with(getName(), getDesc()).createGlobal(api).join();
+        new MessageContextMenuBuilder().setName(this.commandId).createGlobal(api).join();
     }
 
     // Override on child types for if you want custom permissions
-    public boolean canExecute(SlashCommandInteraction event) {
+    public boolean canExecute(MessageContextMenuInteraction event) {
         return true;
     }
 
     // Getters
     public String getName() {
         return commandId;
-    }
-
-    public String getDesc() {
-        return description;
     }
 
     public AABotCore getBot() {
