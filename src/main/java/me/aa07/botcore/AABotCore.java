@@ -3,7 +3,7 @@ package me.aa07.botcore;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 import me.aa07.botcore.messagecommand.AAMessageCommand;
 import me.aa07.botcore.messagecommand.AAMessageCommandListener;
 import me.aa07.botcore.slashcommand.AASlashCommand;
@@ -52,7 +52,7 @@ public abstract class AABotCore {
     }
 
     public void launch() {
-        api = new DiscordApiBuilder().setToken(token).login().join();
+        api = new DiscordApiBuilder().setToken(token).setAllIntents().login().join();
         logger.info(String.format("Logged in as %s / %s", api.getYourself().getName(), api.getYourself().getId()));
 
         setupSlashCommands();
@@ -105,36 +105,40 @@ public abstract class AABotCore {
         logger.info("Registering slash commands...");
 
         // Get a list of our registered commands
-        List<SlashCommand> existing_commands = api.getGlobalSlashCommands().join();
+        try {
+            Set<SlashCommand> existing_commands = api.getGlobalSlashCommands().get();
 
-        for (AASlashCommand aasc : getSlashCommands()) {
-            // First see if our command is in the list already
-            boolean skip = false;
+            for (AASlashCommand aasc : getSlashCommands()) {
+                // First see if our command is in the list already
+                boolean skip = false;
+                for (SlashCommand sc : existing_commands) {
+                    // We exist. Do nothing.
+                    if (sc.getName().equals(aasc.getName())) {
+                        logger.info(String.format("Slash command %s already exists. Not registering.", aasc.getName()));
+                        skip = true;
+                        break;
+                    }
+                }
+
+                registeredSlashCommands.put(aasc.getName(), aasc);
+
+                if (skip) {
+                    continue;
+                }
+
+                aasc.setup(api);
+                logger.info(String.format("Registered slash command %s", aasc.getName()));
+            }
+
+            // Cleanup old commands
             for (SlashCommand sc : existing_commands) {
-                // We exist. Do nothing.
-                if (sc.getName().equals(aasc.getName())) {
-                    logger.info(String.format("Slash command %s already exists. Not registering.", aasc.getName()));
-                    skip = true;
-                    break;
+                if (!registeredSlashCommands.keySet().contains(sc.getName())) {
+                    logger.info(String.format("Slash command %s does not exist anymore. Removing.", sc.getName()));
+                    sc.delete();
                 }
             }
-
-            registeredSlashCommands.put(aasc.getName(), aasc);
-
-            if (skip) {
-                continue;
-            }
-
-            aasc.setup(api);
-            logger.info(String.format("Registered slash command %s", aasc.getName()));
-        }
-
-        // Cleanup old commands
-        for (SlashCommand sc : existing_commands) {
-            if (!registeredSlashCommands.keySet().contains(sc.getName())) {
-                logger.info(String.format("Slash command %s does not exist anymore. Removing.", sc.getName()));
-                sc.deleteGlobal();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         logger.info(String.format("Registered %s slash commands", registeredSlashCommands.size()));
@@ -145,36 +149,40 @@ public abstract class AABotCore {
         logger.info("Registering message commands");
 
         // Get a list of our registered commands
-        List<MessageContextMenu> existing_commands = api.getGlobalMessageContextMenus().join();
+        try {
+            Set<MessageContextMenu> existing_commands = api.getGlobalMessageContextMenus().join();
 
-        for (AAMessageCommand aamc : getMessageCommands()) {
-            // First see if our command is in the list already
-            boolean skip = false;
+            for (AAMessageCommand aamc : getMessageCommands()) {
+                // First see if our command is in the list already
+                boolean skip = false;
+                for (MessageContextMenu mcm : existing_commands) {
+                    // We exist. Do nothing.
+                    if (mcm.getName().equals(aamc.getName())) {
+                        logger.info(String.format("Message command %s already exists. Not registering.", aamc.getName()));
+                        skip = true;
+                        break;
+                    }
+                }
+
+                registeredMessageCommands.put(aamc.getName(), aamc);
+
+                if (skip) {
+                    continue;
+                }
+
+                aamc.setup(api);
+                logger.info(String.format("Registered command %s", aamc.getName()));
+            }
+
+            // Cleanup old commands
             for (MessageContextMenu mcm : existing_commands) {
-                // We exist. Do nothing.
-                if (mcm.getName().equals(aamc.getName())) {
-                    logger.info(String.format("Message command %s already exists. Not registering.", aamc.getName()));
-                    skip = true;
-                    break;
+                if (!registeredMessageCommands.keySet().contains(mcm.getName())) {
+                    logger.info(String.format("Message command %s does not exist anymore. Removing.", mcm.getName()));
+                    mcm.delete();
                 }
             }
-
-            registeredMessageCommands.put(aamc.getName(), aamc);
-
-            if (skip) {
-                continue;
-            }
-
-            aamc.setup(api);
-            logger.info(String.format("Registered command %s", aamc.getName()));
-        }
-
-        // Cleanup old commands
-        for (MessageContextMenu mcm : existing_commands) {
-            if (!registeredMessageCommands.keySet().contains(mcm.getName())) {
-                logger.info(String.format("Message command %s does not exist anymore. Removing.", mcm.getName()));
-                mcm.deleteGlobal();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         logger.info(String.format("Registered %s message commands", registeredMessageCommands.size()));
