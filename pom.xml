@@ -16,8 +16,9 @@
 
     <distributionManagement>
         <repository>
-            <id>aa07_public</id>
-            <url>https://mocha.affectedarc07.co.uk/repo/repository/public/</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/AffectedArc07/AABotCore</url>
         </repository>
     </distributionManagement>
 
