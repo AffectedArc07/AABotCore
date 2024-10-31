@@ -12,8 +12,8 @@ Step 1, add the following to your `pom.xml` repositories
 
 ```xml
         <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/AffectedArc07/AABotCore</url>
+            <id>aa07_public</id>
+            <url>https://mocha.affectedarc07.co.uk/repo/repository/public/</url>
         </repository>
 ```
 
